@@ -2,14 +2,15 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { VoiceService } from '../services/voice.service';
-import { NgFor, NgIf } from '@angular/common';
+import { JsonPipe, NgFor, NgIf } from '@angular/common';
 import { Observable, of, switchMap } from 'rxjs';
 import { Project } from './interfaces/projects-response.interface';
+import { PreviewResponse } from './interfaces/preview-response.interface';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, FormsModule, NgIf, NgFor],
+  imports: [RouterOutlet, FormsModule, NgIf, NgFor, JsonPipe],
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
@@ -29,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
   projectUUID = '';
 
   voices: any[] = []; // Holds the list of voices
-  previewData:any = undefined;
+  previewData: any | PreviewResponse = {};
 
 
   constructor(private voiceService: VoiceService) {}
@@ -88,7 +89,7 @@ export class AppComponent implements OnInit, OnDestroy {
   
     // Send the voice preview request to the backend
     this.voiceService.previewVoice(payload).subscribe({
-      next: (response: any) => {
+      next: (response: PreviewResponse) => {
         this.previewData = response; 
         this.playAudio(response.audioUrl.item.audio_src);
       },
