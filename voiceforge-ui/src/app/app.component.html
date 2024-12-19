@@ -48,14 +48,30 @@
   </div>
 </div> -->
 
+<!-- app.component.html -->
 <div>
-  <h1>{{ title }}</h1>
-
-  <h2>Available Voices</h2>
-  <ul *ngIf="voices.length > 0; else noVoices">
-    <li *ngFor="let voice of voices">{{ voice.name }} (ID: {{ voice.id }})</li>
-  </ul>
-  <ng-template #noVoices>
-    <p>No voices available. Create one to get started!</p>
-  </ng-template>
+  <h1>Available Voices</h1>
+  <div class="voice-cards">
+    <div *ngFor="let voice of voices" class="voice-card" (click)="selectVoice(voice)">
+      <div class="voice-name">{{ voice.name }}</div>
+      <!-- Optionally, you can display other details like accent, gender, etc. -->
+      <div class="voice-details">{{ voice.details || 'No details available' }}</div>
+    </div>
+  </div>
 </div>
+
+<div *ngFor="let voice of voices" (click)="selectVoice(voice)" [class.selected]="selectedVoice === voice">
+  <div class="voice-card">
+    <h3>{{ voice.name }}</h3>
+    <p>{{ voice.description }}</p>
+  </div>
+</div>
+
+<!-- Text area to input custom text -->
+<textarea [(ngModel)]="textToSynthesize" placeholder="Enter text to synthesize"></textarea>
+
+<!-- Preview Button -->
+<button (click)="previewVoice()">Preview Voice</button>
+
+<!-- Generate Audio Button -->
+<button (click)="generateAudio()">Generate Audio</button>

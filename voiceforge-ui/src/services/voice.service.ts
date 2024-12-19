@@ -9,12 +9,23 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class VoiceService {
-  private apiUrl = 'http://localhost:3000/voices'; // Backend URL to fetch voices
+  private apiUrl = 'http://localhost:3000'; // Backend URL to fetch voices
 
   constructor(private http: HttpClient) {}
 
   // Method to get the voices from the backend
   getVoices(): Observable<any> {
-    return this.http.get<any>(this.apiUrl); // HTTP GET request to the voices endpoint
+    return this.http.get<any>(`${this.apiUrl}/voices`); // HTTP GET request to the voices endpoint
   }
+
+  // Request the preview audio from the backend
+  previewVoice(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/preview`, payload);
+  }
+
+  getProjects(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/projects`);
+  }
+
+  // generateAudio(){}
 }

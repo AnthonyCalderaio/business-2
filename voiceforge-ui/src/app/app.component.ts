@@ -3,6 +3,8 @@ import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { VoiceService } from '../services/voice.service';
 import { NgFor, NgIf } from '@angular/common';
+import { Observable, of, switchMap } from 'rxjs';
+import { Project } from './interfaces/projects-response.interface';
 
 @Component({
   selector: 'app-root',
@@ -22,21 +24,23 @@ export class AppComponent implements OnInit, OnDestroy {
   // API response and voices data
   voices: any[] = []; // Holds the list of voices
   selectedVoiceId: string | null = null; // Holds selected voice UUID
+  selectedVoice: any = null; // Holds the selected voice
+  textToSynthesize: string = '';  // Custom text input
+  projectUUID = '';
+
 
   constructor(private voiceService: VoiceService) {}
 
   ngOnInit() {
-    this.fetchVoices(); // Fetch the list of voices when the component is initialized
-  }
-
-  ngOnDestroy() {
-    // Cleanup any necessary resources when the component is destroyed
-  }
-
-  // Fetch the list of voices from the backend
-  fetchVoices() {
-    this.voiceService.getVoices().subscribe({
-      next: (response: any) => {
+    this.fetchProjects()
+    .pipe(
+      switchMap((projects: any) => {
+        projects?.items.find((project:any) =>{if(project.name === "VoiceForge"){this.projectUUID = project.uuid}})
+        return this.fetchVoices()
+      })
+    )
+    .subscribe({
+      next: (response: Project[]) => {
         console.log('Voices fetched:', response);
         this.voices = response || []; // Store the fetched voices
       },
@@ -46,22 +50,56 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngOnDestroy() {
+    // Cleanup any necessary resources when the component is destroyed
+  }
+
+
+  // Fetch the list of voices from the backend
+  fetchVoices() {
+    return this.voiceService.getVoices()
+    
+  }
+
+  fetchProjects(): Observable<any> {
+   return this.voiceService.getProjects()
+  }
+
   // Method to send voice settings and generate preview with selected voice
   previewVoice() {
-    if (!this.isValidSettings() || !this.selectedVoiceId) {
+    if (!this.selectedVoice || !this.textToSynthesize) {
+      console.warn('Please select a voice and enter text.');
       return;
     }
-
-    const settings = {
+  
+    // Log the payload to ensure it's correctly formed
+    const payload = {
+      projectId: this.projectUUID, // Pass the project UUID
+      voiceId: String(this.selectedVoice.uuid), // Pass the selected voice ID
+      text: this.textToSynthesize, // The text to synthesize
       pitch: this.pitch,
       speed: this.speed,
       emotion: this.emotion,
-      voiceId: this.selectedVoiceId,
     };
-
-    console.log('Sending settings to server:', settings);
-    // this.voiceService.sendVoiceSettings(settings); // Send settings to the backend via the service
+    console.log('payload:'+JSON.stringify(payload));  // <-- Log payload
+  
+    // Send the voice preview request to the backend
+    this.voiceService.previewVoice(payload).subscribe({
+      next: (response: any) => {
+        console.log('Audio preview URL:', response.audioUrl);
+        this.playAudio(response.audioUrl);
+      },
+      error: (err: Error) => console.error('Error previewing voice:', err),
+    });
   }
+
+    // Method to play the audio from the URL
+    playAudio(audioUrl: string) {
+      const audio = new Audio(audioUrl);
+      audio.play().catch((err) => {
+        console.error('Error playing audio:', err);
+      });
+    }
 
   // Validating the settings before sending them to the backend
   isValidSettings(): boolean {
@@ -81,8 +119,29 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   // Method to select a voice from the list
-  selectVoice(voiceId: string) {
-    this.selectedVoiceId = voiceId;
-    console.log('Selected voice:', voiceId);
+  selectVoice(voice: string) {
+    this.selectedVoice = voice;
+    console.log('Selected voice:', voice);
+  }
+
+  generateAudio() {
+    if (this.selectedVoice) {
+      const settings = {
+        pitch: this.pitch,
+        speed: this.speed,
+        emotion: this.emotion,
+      };
+      const voiceUuid = this.selectedVoice.uuid; // Assuming each voice has a uuid
+
+      // Call backend to generate audio
+    //   this.voiceService.generateAudio(voiceUuid, settings).subscribe({
+    //     next: (audioData: any) => {
+    //       // this.playAudio(audioData);
+    //     },
+    //     error: (err: Error) => console.error('Error generating audio:', err),
+    //   });
+    // } else {
+    //   console.warn('Please select a voice first');
+    }
   }
 }
