@@ -1,43 +1,47 @@
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 3000 });
+require('dotenv').config(); // Load environment variables from .env file
 
-wss.on('connection', (ws) => {
-  console.log('A user connected');
+const express = require('express');
+const cors = require('cors');
+const axios = require('axios');
+const app = express();
 
-  // Send a JSON message to the client after they connect
-  ws.send({ message: 'Hello from server!' });
+// Get API Key from environment variable
+const API_KEY = process.env.RESEMBLE_API_KEY;
 
-  ws.on('message', (message) => {
-    console.log('Received message from client:', message);
+// Enable CORS for all routes
+app.use(cors());
 
-    // Here, you can process the message, and then send a response back to the client
-    // For now, let's send back a simple acknowledgment in JSON format
-    try {
-      const data = JSON.parse(message); // Parse the incoming message
-      const { pitch, speed, emotion } = data; // Get pitch, speed, and emotion
-      console.log('Voice settings received:', pitch, speed, emotion);
+// Optionally, allow CORS only from specific origin (Angular frontend)
+app.use(cors({
+  origin: 'http://localhost:4200', // Allow only requests from the Angular app
+  methods: ['GET', 'POST'], // Specify allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+}));
 
-      // Send a response back to the frontend in JSON format
-      const response = {
-        message: 'Voice settings received!',
-        pitch: pitch,
-        speed: speed,
-        emotion: emotion,
-      };
+app.get('/voices', async (req, res) => {
+  if (!API_KEY) {
+    console.error('API key is missing!');
+    return res.status(500).json({ error: 'API key is missing!' });
+  }
 
-      // Send the response back as a JSON string
-      ws.send(JSON.stringify(response));
-    } catch (error) {
-      console.error('Error parsing message:', error);
-      ws.send(JSON.stringify({ error: 'Invalid message format' }));
-    }
-  });
+  console.log('Using API Key:', API_KEY);  // This should log the correct API key
 
-  ws.on('close', () => {
-    console.log('A user disconnected');
-  });
+  const endpoint = 'https://app.resemble.ai/api/v1/voices';
 
-  ws.on('error', (err) => {
-    console.error('WebSocket error:', err);
-  });
+  try {
+    const response = await axios.get(endpoint, {
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+      },
+    });
+
+    res.json(response.data); // Send voices data back to the frontend
+  } catch (error) {
+    console.error('Error fetching voices:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch voices' });
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
 });

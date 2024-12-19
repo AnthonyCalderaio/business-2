@@ -1,56 +1,88 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { WebSocketSubject } from 'rxjs/webSocket';
-import { Observable } from 'rxjs';
+import { VoiceService } from '../services/voice.service';
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, FormsModule],
+  imports: [RouterOutlet, FormsModule, NgIf, NgFor],
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'voiceforge';
-  pitch: number = 1.0; // Default value
-  speed: number = 1.0; // Default value
-  emotion: string = 'neutral'; // Default emotion
 
-  socket$: WebSocketSubject<any>;
-  receivedMessage: string = '';
+  // Voice settings state
+  pitch: number = 1.0;
+  speed: number = 1.0;
+  emotion: string = 'neutral';
 
-  constructor() {
-    // Initialize WebSocket connection
-    this.socket$ = new WebSocketSubject('ws://localhost:3000'); // Ensure this URL is correct
+  // API response and voices data
+  voices: any[] = []; // Holds the list of voices
+  selectedVoiceId: string | null = null; // Holds selected voice UUID
 
-    // Handle messages received from WebSocket
-    this.socket$.subscribe({
-      next: (message) => {
-        console.log('Received message from server:', message);
-        this.receivedMessage = message; // Store the received message to display
+  constructor(private voiceService: VoiceService) {}
+
+  ngOnInit() {
+    this.fetchVoices(); // Fetch the list of voices when the component is initialized
+  }
+
+  ngOnDestroy() {
+    // Cleanup any necessary resources when the component is destroyed
+  }
+
+  // Fetch the list of voices from the backend
+  fetchVoices() {
+    this.voiceService.getVoices().subscribe({
+      next: (response: any) => {
+        console.log('Voices fetched:', response);
+        this.voices = response || []; // Store the fetched voices
       },
-      error: (err) => console.error('WebSocket error:', err),
-      complete: () => console.log('WebSocket connection closed'),
+      error: (err: Error) => {
+        console.error('Error fetching voices:', err);
+      },
     });
   }
 
-  // Method to send voice settings to backend
+  // Method to send voice settings and generate preview with selected voice
   previewVoice() {
+    if (!this.isValidSettings() || !this.selectedVoiceId) {
+      return;
+    }
+
     const settings = {
       pitch: this.pitch,
       speed: this.speed,
       emotion: this.emotion,
+      voiceId: this.selectedVoiceId,
     };
-    
-    this.socket$.next(settings); // Send settings to the server
-    console.log('Sent settings to server:', settings);
+
+    console.log('Sending settings to server:', settings);
+    // this.voiceService.sendVoiceSettings(settings); // Send settings to the backend via the service
   }
 
-  // Cleanup WebSocket when component is destroyed
-  ngOnDestroy() {
-    if (this.socket$) {
-      this.socket$.complete(); // Close the WebSocket connection when the component is destroyed
+  // Validating the settings before sending them to the backend
+  isValidSettings(): boolean {
+    if (this.pitch < 0.5 || this.pitch > 2.0) {
+      console.warn('Pitch must be between 0.5 and 2.0');
+      return false;
     }
+    if (this.speed < 0.5 || this.speed > 2.0) {
+      console.warn('Speed must be between 0.5 and 2.0');
+      return false;
+    }
+    if (!['neutral', 'happy', 'sad'].includes(this.emotion)) {
+      console.warn('Emotion must be one of: neutral, happy, sad');
+      return false;
+    }
+    return true;
+  }
+
+  // Method to select a voice from the list
+  selectVoice(voiceId: string) {
+    this.selectedVoiceId = voiceId;
+    console.log('Selected voice:', voiceId);
   }
 }

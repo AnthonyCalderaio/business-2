@@ -1,40 +1,61 @@
-<div class="container">
-    <h1>VoiceForge AI</h1>
-    <div class="control-group">
-      <label for="pitch">Pitch</label>
-      <input
-        type="range"
-        id="pitch"
-        min="0.5"
-        max="2"
-        step="0.1"
-        [(ngModel)]="pitch"
-      />
-      <span>{{ pitch }}</span>
-    </div>
-  
-    <div class="control-group">
-      <label for="speed">Speed</label>
-      <input
-        type="range"
-        id="speed"
-        min="0.5"
-        max="2"
-        step="0.1"
-        [(ngModel)]="speed"
-      />
-      <span>{{ speed }}</span>
-    </div>
-  
-    <div class="control-group">
-      <label for="emotion">Emotion</label>
-      <select id="emotion" [(ngModel)]="emotion">
-        <option value="neutral">Neutral</option>
-        <option value="happy">Happy</option>
-        <option value="sad">Sad</option>
-        <option value="angry">Angry</option>
-      </select>
-    </div>
-  
+<div class="voiceforge-container">
+  <h1>{{ title }}</h1>
+
+  <!-- Pitch Slider -->
+  <div class="form-group">
+    <label for="pitch">Pitch: {{ pitch }}</label>
+    <input
+      type="range"
+      id="pitch"
+      min="0.5"
+      max="2.0"
+      step="0.1"
+      [(ngModel)]="pitch"
+    />
+  </div>
+
+  <!-- Speed Slider -->
+  <div class="form-group">
+    <label for="speed">Speed: {{ speed }}</label>
+    <input
+      type="range"
+      id="speed"
+      min="0.5"
+      max="2.0"
+      step="0.1"
+      [(ngModel)]="speed"
+    />
+  </div>
+
+  <!-- Emotion Dropdown -->
+  <div class="form-group">
+    <label for="emotion">Emotion:</label>
+    <select id="emotion" [(ngModel)]="emotion">
+      <option value="neutral">Neutral</option>
+      <option value="happy">Happy</option>
+      <option value="sad">Sad</option>
+    </select>
+  </div>
+
+  <!-- Preview Button -->
+  <div class="form-group">
     <button (click)="previewVoice()">Preview Voice</button>
   </div>
+
+  <!-- Feedback Section -->
+  <!-- <div class="feedback" *ngIf="receivedMessage">
+    <p>Server Response: {{ receivedMessage }}</p>
+  </div>
+</div> -->
+
+<div>
+  <h1>{{ title }}</h1>
+
+  <h2>Available Voices</h2>
+  <ul *ngIf="voices.length > 0; else noVoices">
+    <li *ngFor="let voice of voices">{{ voice.name }} (ID: {{ voice.id }})</li>
+  </ul>
+  <ng-template #noVoices>
+    <p>No voices available. Create one to get started!</p>
+  </ng-template>
+</div>
