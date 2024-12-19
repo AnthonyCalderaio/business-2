@@ -22,7 +22,7 @@ app.use(cors({
 
 
 
-// Endping to get voices
+// Endping to get voices from Resemble API
 app.get('/voices', async (req, res) => {
   if (!API_KEY) {
     console.error('API key is missing!');
@@ -46,7 +46,7 @@ app.get('/voices', async (req, res) => {
   }
 });
 
-// Endpoint to generate a voice preview
+// Endpoint to generate a voice preview from Resemble API
 app.post('/preview', async (req, res) => {
   const { projectId, voiceId, text, pitch, speed, emotion } = req.body;
 
@@ -100,6 +100,37 @@ app.get('/projects', async (req, res) => {
   } catch (error) {
     console.error('Error fetching projects:', error.response?.data || error.message);
     res.status(500).json({ error: 'Failed to fetch projects' });
+  }
+});
+
+// Create voices from Resemble API
+app.post('/create-voice', async (req, res) => {
+  const { name, consent, dataset_url } = req.body;
+
+  if (!name || !consent) {
+    return res.status(400).json({ error: 'Name and consent are required.' });
+  }
+
+  const endpoint = `https://app.resemble.ai/api/v2/voices`;
+
+  const payload = {
+    name,
+    consent,
+    ...(dataset_url && { dataset_url }), // Add dataset_url only if provided
+  };
+
+  try {
+    const response = await axios.post(endpoint, payload, {
+      headers: {
+        Authorization: `Token token=${API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    res.status(201).json(response.data);
+  } catch (error) {
+    console.error('Error creating voice:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to create voice' });
   }
 });
 

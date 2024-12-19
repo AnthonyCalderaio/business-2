@@ -37,16 +37,19 @@
     </select>
   </div>
 
-  <!-- Preview Button -->
-  <!-- <div class="form-group">
-    <button (click)="previewVoice()">Preview Voice</button>
-  </div> -->
+<form (ngSubmit)="createVoice()">
+  <label for="name">Voice Name:</label>
+  <input id="name" type="text" [(ngModel)]="voiceData.name" name="name" required />
 
-  <!-- Feedback Section -->
-  <!-- <div class="feedback" *ngIf="receivedMessage">
-    <p>Server Response: {{ receivedMessage }}</p>
-  </div>
-</div> -->
+  <label for="consent">Consent Audio File (Base64):</label>
+  <textarea id="consent" [(ngModel)]="voiceData.consent" name="consent" placeholder="Paste Base64-encoded consent file" required></textarea>
+
+  <label for="dataset">Dataset URL (Optional):</label>
+  <input id="dataset" type="url" [(ngModel)]="voiceData.dataset_url" name="dataset" />
+
+  <button type="submit">Create Voice</button>
+</form>
+
 
 <!-- app.component.html -->
 <div>

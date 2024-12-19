@@ -6,6 +6,7 @@ import { JsonPipe, NgFor, NgIf } from '@angular/common';
 import { Observable, of, switchMap } from 'rxjs';
 import { Project } from './interfaces/projects-response.interface';
 import { PreviewResponse } from './interfaces/preview-response.interface';
+import { CreateVoiceResponse } from './interfaces/create-voice-response.interface';
 
 @Component({
   selector: 'app-root',
@@ -22,16 +23,20 @@ export class AppComponent implements OnInit, OnDestroy {
   speed: number = 1.0;
   emotion: string = 'neutral';
 
-  // API response and voices data
-  
+  // Local data
   selectedVoiceId: string | null = null; // Holds selected voice UUID
   selectedVoice: any = null; // Holds the selected voice
   textToSynthesize: string = '';  // Custom text input
-  projectUUID = '';
+  voiceData = {
+    name: '',
+    consent: '',
+    dataset_url: '',
+  };
 
+  // Data received
+  projectUUID = '';
   voices: any[] = []; // Holds the list of voices
   previewData: any | PreviewResponse = {};
-
 
   constructor(private voiceService: VoiceService) {}
 
@@ -68,6 +73,25 @@ export class AppComponent implements OnInit, OnDestroy {
   fetchProjects(): Observable<any> {
    return this.voiceService.getProjects()
   }
+
+    // Method to create a voice from the backend
+    createVoice() {
+      if (!this.voiceData.name || !this.voiceData.consent) {
+        alert('Name and consent audio are required.');
+        return;
+      }
+  
+      this.voiceService.createVoice(this.voiceData).subscribe({
+        next: (response: CreateVoiceResponse) => {
+          alert('Voice created successfully!');
+          console.log(response);
+        },
+        error: (err) => {
+          console.error('Error creating voice:', err);
+          alert('Failed to create voice.');
+        },
+      });
+    }
 
   // Method to send voice settings and generate preview with selected voice
   previewVoice() {
