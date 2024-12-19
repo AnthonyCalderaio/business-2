@@ -38,9 +38,9 @@
   </div>
 
   <!-- Preview Button -->
-  <div class="form-group">
+  <!-- <div class="form-group">
     <button (click)="previewVoice()">Preview Voice</button>
-  </div>
+  </div> -->
 
   <!-- Feedback Section -->
   <!-- <div class="feedback" *ngIf="receivedMessage">
@@ -65,6 +65,15 @@
     <h3>{{ voice.name }}</h3>
     <p>{{ voice.description }}</p>
   </div>
+</div>
+
+<div *ngIf="previewData">
+  <h3>{{ previewData?.title }}</h3>
+  <p>{{ previewData?.body }}</p>
+  <audio controls>
+    <source [src]="previewData?.audioURL?.item?.audio_src" type="audio/wav" />
+    Your browser does not support the audio element.
+  </audio>
 </div>
 
 <!-- Text area to input custom text -->

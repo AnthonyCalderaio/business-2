@@ -22,11 +22,14 @@ export class AppComponent implements OnInit, OnDestroy {
   emotion: string = 'neutral';
 
   // API response and voices data
-  voices: any[] = []; // Holds the list of voices
+  
   selectedVoiceId: string | null = null; // Holds selected voice UUID
   selectedVoice: any = null; // Holds the selected voice
   textToSynthesize: string = '';  // Custom text input
   projectUUID = '';
+
+  voices: any[] = []; // Holds the list of voices
+  previewData:any = undefined;
 
 
   constructor(private voiceService: VoiceService) {}
@@ -86,8 +89,8 @@ export class AppComponent implements OnInit, OnDestroy {
     // Send the voice preview request to the backend
     this.voiceService.previewVoice(payload).subscribe({
       next: (response: any) => {
-        console.log('Audio preview URL:', response.audioUrl);
-        this.playAudio(response.audioUrl);
+        this.previewData = response; 
+        this.playAudio(response.audioUrl.item.audio_src);
       },
       error: (err: Error) => console.error('Error previewing voice:', err),
     });
