@@ -10,6 +10,7 @@ const API_KEY = process.env.RESEMBLE_API_KEY;
 
 app.use(express.json());  // This is important for parsing the request body as JSON
 
+// OG worked
 // Enable CORS for all routes
 // app.use(cors());
 
@@ -20,13 +21,36 @@ app.use(express.json());  // This is important for parsing the request body as J
 // }));
 
 
-const corsOptions = {
-  origin: ['https://voiceforge.netlify.app/','http://localhost:4200'], // Add your frontend URL
-  methods: ['GET', 'POST'],
-};
+// Trying to fix cors issue
+// const corsOptions = {
+//   origin: ['https://voiceforge.netlify.app/','http://localhost:4200'], // Add your frontend URL
+//   methods: ['GET', 'POST'],
+// };
+
+// app.use(cors(corsOptions));
 
 
-app.use(cors(corsOptions));
+// Latest attempt
+const allowedOrigins = [
+  'https://voiceforge.netlify.app/',  // Your Netlify domain
+  'http://localhost:4200',           // Local development (default Angular port)
+  'https://localhost:4200',          // For HTTPS in local dev, if needed
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Check if the request's origin is in the allowedOrigins list
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      // Allow the request if the origin is in the allowed list
+      callback(null, true);
+    } else {
+      // Reject the request if the origin is not allowed
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 
 // Endping to get voices from Resemble API
