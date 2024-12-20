@@ -1,0 +1,1 @@
+web: cd voiceforge-backend && npm i && node server.js 
