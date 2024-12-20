@@ -39,3 +39,11 @@ Store the audio for later use or compilation into a full audiobook.
 Final Output (Audiobook Creation):
 
 Step 12: As the user creates multiple audio files (for each section or chapter of their audiobook), the app can help them compile these files together into a cohesive audiobook format (MP3, WAV, etc.).
+
+
+# Deployments
+
+## Backend
+1) When you updated the branch, deploy with with: `git push heroku <branch-name>:main`
+2) Listen to instance with saved command: `Backend: Monitor: Heroku instance` 
+3) Set .env keys with: saved command: `Backend: Set: .env key`

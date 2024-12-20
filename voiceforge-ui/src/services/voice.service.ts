@@ -5,12 +5,13 @@ import { WebSocketSubject } from 'rxjs/webSocket';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { CreateVoiceResponse } from '../app/mocks/create-voice-response';
+import { environment } from '../environments/environment'; // Import the environment
 
 @Injectable({
   providedIn: 'root',
 })
 export class VoiceService {
-  private apiUrl = 'http://localhost:3000'; // Backend URL to fetch voices
+  private apiUrl = environment.backendUrl; // Backend URL to fetch voices
 
   constructor(private http: HttpClient) {}
 
