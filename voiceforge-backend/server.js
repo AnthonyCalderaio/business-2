@@ -139,6 +139,7 @@ app.get('/test', async (req, res) =>{
 })
 
 
-app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+const port = process.env.PORT || 3000;  // Heroku sets the PORT env variable, otherwise fallback to 3000 locally
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
