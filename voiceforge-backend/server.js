@@ -32,20 +32,17 @@ app.use(express.json());  // This is important for parsing the request body as J
 
 // Latest attempt
 const allowedOrigins = [
-  'https://voiceforge.netlify.app/',  // Your Netlify domain
-  'http://localhost:4200',           // Local development (default Angular port)
-  'https://localhost:4200',          // For HTTPS in local dev, if needed
+  'https://voiceforge.netlify.app',  // Your Netlify URL
+  'http://localhost:4200',           // Local testing URL (if you're working locally)
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Check if the request's origin is in the allowedOrigins list
+    // Check if the origin is in the allowed list or if no origin is provided (for local testing)
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      // Allow the request if the origin is in the allowed list
-      callback(null, true);
+      callback(null, true);  // Allow the request
     } else {
-      // Reject the request if the origin is not allowed
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error('Not allowed by CORS'));  // Reject the request
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
