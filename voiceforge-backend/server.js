@@ -134,7 +134,9 @@ app.post('/create-voice', async (req, res) => {
   }
 });
 
-
+app.get('/test', async (req, res) =>{
+  res.send('I\'m working!');
+})
 
 
 app.listen(3000, () => {
