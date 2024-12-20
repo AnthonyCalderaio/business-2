@@ -11,15 +11,22 @@ const API_KEY = process.env.RESEMBLE_API_KEY;
 app.use(express.json());  // This is important for parsing the request body as JSON
 
 // Enable CORS for all routes
-app.use(cors());
+// app.use(cors());
 
-// Optionally, allow CORS only from specific origin (Angular frontend)
-app.use(cors({
-  origin: 'http://localhost:4200', // Allow only requests from the Angular app
-  methods: ['GET', 'POST'], // Specify allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-}));
+// app.use(cors({
+//   origin: 'http://localhost:4200', // Allow only requests from the Angular app
+//   methods: ['GET', 'POST'], // Specify allowed HTTP methods
+//   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+// }));
 
+
+const corsOptions = {
+  origin: ['https://voiceforge.netlify.app/','http://localhost:4200'], // Add your frontend URL
+  methods: ['GET', 'POST'],
+};
+
+
+app.use(cors(corsOptions));
 
 
 // Endping to get voices from Resemble API
