@@ -9,6 +9,8 @@ import { PreviewResponse } from '../../interfaces/preview-response.interface';
 import { CreateVoiceResponse } from '../../interfaces/create-voice-response.interface';
 import { AuthService } from '@auth0/auth0-angular';
 import { Token } from '@angular/compiler';
+import { Voice } from '../../interfaces/voice.interface';
+import { Clip } from '../../interfaces/clip.interface';
 
 @Component({
   selector: 'app-home',
@@ -27,13 +29,15 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Local data
   selectedVoiceId: string | null = null; // Holds selected voice UUID
-  selectedVoice: any = null; // Holds the selected voice
+  selectedVoice: Voice | undefined = undefined; // Holds the selected voice
   textToSynthesize: string = '';  // Custom text input
   voiceData = {
     name: '',
     consent: '',
     dataset_url: '',
   };
+  currentPage: number = 1;   // Current page of clips
+  clipsPerPage: number = 5; 
 
   // Local data - Audio recording data
   isRecording = false;
@@ -47,9 +51,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   projectUUID = '';
   voices: any[] = []; // Holds the list of voices
   previewData: any | PreviewResponse = {};
+  clipsList: Clip[] = []
 
   userProfile: any;
   accessToken: Token | undefined;
+
+  get totalPages(): number {
+    return Math.ceil(this.clipsList.length / this.clipsPerPage);
+  }
 
   constructor(private voiceService: VoiceService, private auth: AuthService) { }
 
@@ -82,16 +91,23 @@ export class HomeComponent implements OnInit, OnDestroy {
           });
 
           // Fetch the voices for the selected project
+          return this.fetchClips(this.projectUUID);
+        }),
+        switchMap((clips: Clip[]) => {
+          this.clipsList = clips;
+          this.updateClipsList();
           return this.fetchVoices();
         })
+
       )
       .subscribe({
         next: (response: any) => {
           console.log('Voices fetched:', response);
           this.voices = response || []; // Store the fetched voices
         },
+        // TODO: look into if this catches an error at any place along the chain of switchmaps
         error: (err: any) => {
-          console.error('Error fetching voices:', err);
+          console.error('Error:', err);
         },
       });
   }
@@ -102,13 +118,42 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 
   // Fetch the list of voices from the backend
-  fetchVoices() {
-    return this.voiceService.getVoices()
+  fetchVoices(): Observable<any> {
+    return this.voiceService.getVoices();
 
   }
 
   fetchProjects(): Observable<any> {
     return this.voiceService.getProjects()
+  }
+
+  fetchClips(project_uuid: string): Observable<any> {
+    return this.voiceService.getClips(project_uuid);
+  }
+  // TODO: Implement
+  deleteClip(clip: String){ }
+
+  // Update clipsList based on the current page
+  updateClipsList(): void {
+    const startIndex = (this.currentPage - 1) * this.clipsPerPage;
+    const endIndex = startIndex + this.clipsPerPage;
+    this.clipsList = this.clipsList.slice(startIndex, endIndex);
+  }
+
+  // Go to the next page of clips
+  nextPage(): void {
+    if (this.currentPage * this.clipsPerPage < this.clipsList.length) {
+      this.currentPage++;
+      this.updateClipsList();
+    }
+  }
+
+  // Go to the previous page of clips
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateClipsList();
+    }
   }
 
   // Start recording
@@ -250,7 +295,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   // Method to select a voice from the list
-  selectVoice(voice: string) {
+  selectVoice(voice: Voice) {
     this.selectedVoice = voice;
     console.log('Selected voice:', voice);
   }
@@ -275,7 +320,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       //   console.warn('Please select a voice first');
     }
   }
-  
+
   logout(): void {
     this.auth.logout({ logoutParams: { returnTo: `${window.location.origin}/login` } });
   }

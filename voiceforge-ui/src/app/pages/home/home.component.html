@@ -1,27 +1,97 @@
 <div class="voiceforge-container">
-
   <div class="home-container">
     <h1>Welcome, {{ userProfile?.name }}</h1>
     <img [src]="userProfile?.picture" alt="User Picture" />
     <p>Email: {{ userProfile?.email }}</p>
-  
     <!-- Logout Button -->
     <button (click)="logout()">Logout</button>
   </div>
-  
-    <h1>{{ title }}</h1>
+
+  <h1>{{ title }}</h1>
+
+  <!-- Voice Section (Available Voices and Create Voice) -->
+  <div class="voice-section">
+    <div class="voice-list">
+      <h2>Available Voices</h2>
+      <div class="voice-cards">
+        <div *ngFor="let voice of voices" class="voice-card" (click)="selectVoice(voice)">
+          <div class="voice-name">{{ voice.name }}</div>
+          <div class="voice-details">{{ voice.details || 'No details available' }}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="clips-list">
+      <h3>Clips for Selected Voice</h3>
+      <ul *ngIf="selectedVoice">
+        <li *ngFor="let clip of clipsList">
+          <!-- Display Clip Title and Audio -->
+          <div class="clip-item">
+            <div class="clip-info">
+              <h4>{{ clip.title }}</h4>
+              <!-- Audio player for each clip -->
+              <audio controls>
+                <source [src]="clip.audio_src" type="audio/wav" />
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+    
+            <!-- Trash Icon (delete) on the right side of the audio player -->
+            <button (click)="deleteClip(clip.uuid)" class="trash-icon">🗑️</button>
+          </div>
+        </li>
+      </ul>
+    
+      <!-- Pagination Controls -->
+      <div class="pagination">
+        <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage * clipsPerPage >= clipsList.length">Next</button>
+      </div>
+    </div>
+
+    <div class="create-voice">
+      <h2>Create a Voice</h2>
+      <form (ngSubmit)="createVoice()">
+        <div class="form-group">
+          <label for="name">Voice Name:</label>
+          <input id="name" type="text" [(ngModel)]="voiceData.name" name="name" required />
+        </div>
+        <div class="file-upload">
+          <label for="fileUpload">Upload Consent Audio:</label>
+          <input type="file" id="fileUpload" (change)="onFileSelected($event)" />
+        </div>
+        <div class="record-audio">
+          <label>Record Consent Audio:</label>
+          <div class="buttons">
+            <button type="button" (click)="startRecording()">Start Recording</button>
+            <button type="button" (click)="stopRecording()">Stop Recording</button>
+          </div>
+          <audio *ngIf="audioUrl" controls [src]="audioUrl"></audio>
+        </div>
+        <div class="form-group">
+          <label for="dataset">Dataset URL (Optional):</label>
+          <input id="dataset" type="url" [(ngModel)]="voiceData.dataset_url" name="dataset" />
+        </div>
+        <button type="submit" class="primary-button">Create Voice</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Synthesize Section -->
+  <div class="synthesize-container">
     <!-- Voice Parameters Section -->
     <div class="voice-parameters">
       <div class="form-group">
         <label for="pitch">Pitch: {{ pitch }}</label>
         <input type="range" id="pitch" min="0.5" max="2.0" step="0.1" [(ngModel)]="pitch" />
       </div>
-  
+
       <div class="form-group">
         <label for="speed">Speed: {{ speed }}</label>
         <input type="range" id="speed" min="0.5" max="2.0" step="0.1" [(ngModel)]="speed" />
       </div>
-  
+
       <div class="form-group">
         <label for="emotion">Emotion:</label>
         <select id="emotion" [(ngModel)]="emotion">
@@ -31,70 +101,26 @@
         </select>
       </div>
     </div>
-  
-    <!-- Voice Section (Available Voices and Create Voice) -->
-    <div class="voice-section">
-      <div class="voice-list">
-        <h2>Available Voices</h2>
-        <div class="voice-cards">
-          <div *ngFor="let voice of voices" class="voice-card" (click)="selectVoice(voice)">
-            <div class="voice-name">{{ voice.name }}</div>
-            <div class="voice-details">{{ voice.details || 'No details available' }}</div>
-          </div>
-        </div>
-      </div>
-  
-      <div class="create-voice">
-        <h2>Create a Voice</h2>
-        <form (ngSubmit)="createVoice()">
-          <div class="form-group">
-            <label for="name">Voice Name:</label>
-            <input id="name" type="text" [(ngModel)]="voiceData.name" name="name" required />
-          </div>
-  
-          <div class="file-upload">
-            <label for="fileUpload">Upload Consent Audio:</label>
-            <input type="file" id="fileUpload" (change)="onFileSelected($event)" />
-          </div>
-  
-          <div class="record-audio">
-            <label>Record Consent Audio:</label>
-            <div class="buttons">
-              <button type="button" (click)="startRecording()">Start Recording</button>
-              <button type="button" (click)="stopRecording()">Stop Recording</button>
-            </div>
-            <audio *ngIf="audioUrl" controls [src]="audioUrl"></audio>
-          </div>
-  
-          <div class="form-group">
-            <label for="dataset">Dataset URL (Optional):</label>
-            <input id="dataset" type="url" [(ngModel)]="voiceData.dataset_url" name="dataset" />
-          </div>
-  
-          <button type="submit" class="primary-button">Create Voice</button>
-        </form>
-      </div>
-    </div>
-  
-    <!-- Preview Section -->
-    <div *ngIf="previewData?.audioUrl" class="preview-section">
-      <h3>{{ previewData?.title }}</h3>
-      <p>{{ previewData?.body }}</p>
-      <audio controls>
-        <source [src]="previewData?.audioUrl?.item?.audio_src" type="audio/wav" />
-        Your browser does not support the audio element.
-      </audio>
-    </div>
-  
+
     <!-- Text area to input custom text -->
     <div class="text-input">
       <textarea [(ngModel)]="textToSynthesize" placeholder="Enter text to synthesize"></textarea>
     </div>
-  
+
     <!-- Preview and Generate Audio Buttons -->
     <div class="button-group">
       <button class="secondary-button" (click)="previewVoice()">Preview Voice</button>
       <button class="primary-button" (click)="generateAudio()">Generate Audio</button>
     </div>
   </div>
-  
+
+  <!-- Preview Section -->
+  <div *ngIf="previewData?.audioUrl" class="preview-section">
+    <h3>{{ previewData?.title }}</h3>
+    <p>{{ previewData?.body }}</p>
+    <audio controls>
+      <source [src]="previewData?.audioUrl?.item?.audio_src" type="audio/wav" />
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+</div>

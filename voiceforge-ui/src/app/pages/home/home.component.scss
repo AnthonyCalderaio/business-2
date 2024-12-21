@@ -1,41 +1,175 @@
 .voiceforge-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 30px;
+  }
+
+  .home-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
     h1 {
-      text-align: center;
-      font-size: 32px;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 30px;
+      font-size: 24px;
     }
-  
+
+    img {
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+  }
+
+  .voice-section {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 40px;
+
+    .voice-list {
+      display: flex;
+      justify-content: space-between;
+      gap: 30px;
+      
+      .voice-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        flex: 1;
+
+        .voice-card {
+          padding: 15px;
+          background-color: #fff;
+          border-radius: 10px;
+          border: 1px solid #ddd;
+          cursor: pointer;
+          transition: transform 0.3s ease, background-color 0.3s ease;
+
+          &:hover {
+            transform: scale(1.05);
+            background-color: #f0f0f0;
+          }
+
+          .voice-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+          }
+
+          .voice-details {
+            font-size: 14px;
+            color: #777;
+          }
+        }
+      }
+
+
+      
+    }
+
+    .create-voice {
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+
+      h2 {
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .file-upload,
+        .record-audio {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .buttons {
+          display: flex;
+          gap: 10px;
+        }
+
+        button {
+          padding: 12px;
+          font-size: 16px;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+
+          &:hover {
+            background-color: #0056b3;
+          }
+        }
+
+        .primary-button {
+          background-color: #007bff;
+          color: white;
+          border: none;
+        }
+
+        .secondary-button {
+          background-color: #28a745;
+          color: white;
+          border: none;
+        }
+      }
+    }
+  }
+
+  .synthesize-container {
+    margin-top: 40px;
+
     .voice-parameters {
       display: flex;
       justify-content: space-between;
       gap: 30px;
       margin-bottom: 40px;
-  
+
       .form-group {
         display: flex;
         flex-direction: column;
         width: 30%;
         gap: 10px;
-  
+
         label {
           font-size: 16px;
           font-weight: bold;
         }
-  
+
         input[type="range"] {
           width: 100%;
           margin-top: 10px;
         }
-  
+
         select {
           padding: 10px;
           font-size: 16px;
@@ -44,134 +178,11 @@
         }
       }
     }
-  
-    .voice-section {
-      display: flex;
-      gap: 30px;
-      margin-bottom: 40px;
-  
-      .voice-list {
-        flex: 1;
-        .voice-cards {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-  
-          .voice-card {
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 10px;
-            border: 1px solid #ddd;
-            cursor: pointer;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-  
-            &:hover {
-              transform: scale(1.05);
-              background-color: #f0f0f0;
-            }
-  
-            .voice-name {
-              font-size: 18px;
-              font-weight: bold;
-              color: #333;
-            }
-  
-            .voice-details {
-              font-size: 14px;
-              color: #777;
-            }
-          }
-        }
-      }
-  
-      .create-voice {
-        flex: 1;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 10px;
-        border: 1px solid #ddd;
-  
-        h2 {
-          text-align: center;
-          font-size: 24px;
-          margin-bottom: 20px;
-          color: #333;
-        }
-  
-        form {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-  
-          .file-upload,
-          .record-audio {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-          }
-  
-          .buttons {
-            display: flex;
-            gap: 10px;
-          }
-  
-          button {
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-  
-            &:hover {
-              background-color: #0056b3;
-            }
-          }
-  
-          .primary-button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-          }
-  
-          .secondary-button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-          }
-        }
-      }
-    }
-  
-    .preview-section {
-      margin-top: 40px;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  
-      h3 {
-        font-size: 24px;
-        margin-bottom: 10px;
-        color: #333;
-      }
-  
-      p {
-        font-size: 16px;
-        color: #777;
-        margin-bottom: 20px;
-      }
-  
-      audio {
-        width: 100%;
-        margin-top: 10px;
-      }
-    }
-  
+
     .text-input {
       width: 100%;
       margin-top: 30px;
-  
+
       textarea {
         width: 100%;
         padding: 15px;
@@ -181,19 +192,45 @@
         min-height: 150px;
       }
     }
-  
+
     .button-group {
       display: flex;
       justify-content: space-between;
       margin-top: 20px;
     }
   }
-  
+
+  .preview-section {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+    h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    p {
+      font-size: 16px;
+      color: #777;
+      margin-bottom: 20px;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
+
   .button-group {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
-  
+
     button {
       padding: 12px 24px;
       font-size: 16px;
@@ -207,42 +244,119 @@
       display: flex;
       align-items: center;
       justify-content: center;
-  
+
       &:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
       }
-  
+
       &:focus {
         outline: none;
       }
-  
+
       .icon {
         margin-right: 8px;
         font-size: 18px;
       }
     }
-  
+
     .primary-button {
       background-color: #007bff;
       color: white;
       border-radius: 30px;
       border: none;
-  
+
       &:hover {
         background-color: #0056b3;
       }
     }
-  
+
     .secondary-button {
       background-color: #28a745;
       color: white;
       border-radius: 30px;
       border: none;
-  
+
       &:hover {
         background-color: #218838;
       }
     }
   }
-  
+}
+
+.clips-list {
+  margin-top: 20px;
+
+  .clip-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+
+    .clip-info {
+      display: flex;
+      flex-grow: 1;
+      gap: 15px;
+      align-items: center;
+
+      h4 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      audio {
+        flex-grow: 1;
+        max-width: 70%;
+      }
+    }
+
+    .trash-icon {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: red;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: darkred;
+      }
+    }
+  }
+
+  .pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+    }
+
+    span {
+      font-size: 16px;
+      color: #333;
+    }
+  }
+}

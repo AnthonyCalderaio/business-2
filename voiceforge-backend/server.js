@@ -10,26 +10,6 @@ const API_KEY = process.env.RESEMBLE_API_KEY;
 
 app.use(express.json());  // This is important for parsing the request body as JSON
 
-// OG worked
-// Enable CORS for all routes
-// app.use(cors());
-
-// app.use(cors({
-//   origin: 'http://localhost:4200', // Allow only requests from the Angular app
-//   methods: ['GET', 'POST'], // Specify allowed HTTP methods
-//   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-// }));
-
-
-// Trying to fix cors issue
-// const corsOptions = {
-//   origin: ['https://voiceforge.netlify.app/','http://localhost:4200'], // Add your frontend URL
-//   methods: ['GET', 'POST'],
-// };
-
-// app.use(cors(corsOptions));
-
-
 // Latest attempt
 const allowedOrigins = [
   'https://voiceforge.netlify.app',  // Your Netlify URL
@@ -103,6 +83,28 @@ app.post('/preview', async (req, res) => {
   } catch (error) {
     console.error('Error generating voice preview:', error.response?.data || error.message);
     res.status(500).json({ error: 'Failed to generate preview' });
+  }
+});
+
+// Endpoint to get all clips from Resemble API
+app.get('/clips', async (req, res) => {
+  try {
+    const project_uuid = req.query.project_uuid;  // Get voice_uuid from query parameters
+    const response = await axios.get(`https://app.resemble.ai/api/v2/projects/${project_uuid}/clips?page=1&page_size=10`, {
+      headers: {
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      params: {
+        page: 1,
+        page_size: 10
+      }
+    });
+
+    const clips = response.data.items;
+    res.json(clips);
+  } catch (error) {
+    console.error('Error fetching clips:', error);
+    res.status(500).json({ message: 'Error fetching clips' });
   }
 });
 
