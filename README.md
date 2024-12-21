@@ -46,7 +46,7 @@ Step 12: As the user creates multiple audio files (for each section or chapter o
 ## Backend
 1) When you updated the branch, deploy with with: `git push heroku <branch-name>:main`
 2) Listen to instance with saved command: `Backend: Monitor: Heroku instance` 
-3) Set .env keys with: saved command: `Backend: Set: .env key`
+3) OPTIONAL: Only need to do this when you set up the app. Set .env keys with: saved command: `Backend: Set: .env key`. 
 
 ## Frontend
 1) Push changes to the branch set to listen to in netlify and it will automatically deploy when pushing to that branch.
