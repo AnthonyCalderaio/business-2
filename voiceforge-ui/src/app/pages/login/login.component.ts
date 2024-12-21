@@ -5,7 +5,7 @@ import { AuthService } from '@auth0/auth0-angular';
   selector: 'app-login',
   standalone: true,
   templateUrl: 'login.component.html',
-  styles: ['login.component.scss'],
+  styleUrls: ['login.component.scss'],
 })
 export class LoginComponent {
   auth = inject(AuthService);

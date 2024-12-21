@@ -50,3 +50,16 @@ Step 12: As the user creates multiple audio files (for each section or chapter o
 
 ## Frontend
 1) Push changes to the branch set to listen to in netlify and it will automatically deploy when pushing to that branch.
+
+
+## Environment Variables
+### Autho0 
+keys: `domain` and `clientId` 
+located: netlify
+url: `https://app.netlify.com/sites/voiceforge/configuration/env#domain`
+
+### Resemble.ai
+keys: `RESEMBLE_API_KEY`
+located: heroku
+
+    
