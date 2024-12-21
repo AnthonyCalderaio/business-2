@@ -12,8 +12,8 @@ export const appConfig: ApplicationConfig = {
 
     provideHttpClient(),
     provideAuth0({
-      domain: process.env['AUTH0_DOMAIN'] || '', // Use environment variable
-      clientId: process.env['AUTH0_CLIENT_ID'] || '', // Use environment variable
+      domain: process.env['domain'] || '', // Use environment variable
+      clientId: process.env['clientId'] || '', // Use environment variable
       authorizationParams: {
         redirect_uri: window.location.origin,
       },
