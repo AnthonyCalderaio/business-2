@@ -1,6 +1,15 @@
 <div class="voiceforge-container">
-    <h1>{{ title }}</h1>
+
+  <div class="home-container">
+    <h1>Welcome, {{ userProfile?.name }}</h1>
+    <img [src]="userProfile?.picture" alt="User Picture" />
+    <p>Email: {{ userProfile?.email }}</p>
   
+    <!-- Logout Button -->
+    <button (click)="logout()">Logout</button>
+  </div>
+  
+    <h1>{{ title }}</h1>
     <!-- Voice Parameters Section -->
     <div class="voice-parameters">
       <div class="form-group">

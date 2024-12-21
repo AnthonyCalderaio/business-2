@@ -7,6 +7,8 @@ import { Observable, of, switchMap } from 'rxjs';
 import { Project } from '../../interfaces/projects-response.interface'
 import { PreviewResponse } from '../../interfaces/preview-response.interface';
 import { CreateVoiceResponse } from '../../interfaces/create-voice-response.interface';
+import { AuthService } from '@auth0/auth0-angular';
+import { Token } from '@angular/compiler';
 
 @Component({
   selector: 'app-home',
@@ -32,7 +34,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     consent: '',
     dataset_url: '',
   };
-  
+
   // Local data - Audio recording data
   isRecording = false;
   audioUrl: string | null = null;
@@ -46,22 +48,49 @@ export class HomeComponent implements OnInit, OnDestroy {
   voices: any[] = []; // Holds the list of voices
   previewData: any | PreviewResponse = {};
 
-  constructor(private voiceService: VoiceService) { }
+  userProfile: any;
+  accessToken: Token | undefined;
 
-  ngOnInit() {
-    this.fetchProjects()
+  constructor(private voiceService: VoiceService, private auth: AuthService) { }
+
+  ngOnInit(): void {
+    // Fetch user profile and access token after login
+    this.auth.user$
       .pipe(
+        switchMap((user: any) => {
+          // Store the user profile
+          this.userProfile = user;
+          console.log('User Profile:', user);
+
+          // Get the access token as well
+          return this.auth.idTokenClaims$ as Observable<any>; // Or use accessToken$ depending on the type of token you need
+        }),
+        switchMap((token: Token) => {
+          // Store the access token
+          this.accessToken = token;
+          console.log('Access Token:', token);
+
+          // Continue fetching projects after receiving the token
+          return this.fetchProjects();
+        }),
         switchMap((projects: any) => {
-          projects?.items.find((project: any) => { if (project.name === "VoiceForge") { this.projectUUID = project.uuid } })
-          return this.fetchVoices()
+          // Find the specific project you need
+          projects?.items.find((project: any) => {
+            if (project.name === 'VoiceForge') {
+              this.projectUUID = project.uuid;
+            }
+          });
+
+          // Fetch the voices for the selected project
+          return this.fetchVoices();
         })
       )
       .subscribe({
-        next: (response: Project[]) => {
+        next: (response: any) => {
           console.log('Voices fetched:', response);
           this.voices = response || []; // Store the fetched voices
         },
-        error: (err: Error) => {
+        error: (err: any) => {
           console.error('Error fetching voices:', err);
         },
       });
@@ -245,5 +274,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       // } else {
       //   console.warn('Please select a voice first');
     }
+  }
+  
+  logout(): void {
+    this.auth.logout({ logoutParams: { returnTo: `${window.location.origin}/login` } });
   }
 }

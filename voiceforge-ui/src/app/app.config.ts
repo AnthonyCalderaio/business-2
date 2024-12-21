@@ -18,6 +18,8 @@ export const appConfig: ApplicationConfig = {
       authorizationParams: {
         redirect_uri: window.location.origin,
       },
+      cacheLocation: 'localstorage', // Store tokens in local storage
+      useRefreshTokens: true, // Enable Refresh Token Rotation
     }),
   ]
 };
