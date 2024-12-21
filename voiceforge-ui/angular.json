@@ -39,7 +39,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "outputPath": "dist/voiceforge-ui",
             "index": "src/index.html",
@@ -55,7 +55,10 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "customWebpackConfig": {
+            "path": "./webpack.config.js"
+          }
           },
           "configurations": {
             "production": {
