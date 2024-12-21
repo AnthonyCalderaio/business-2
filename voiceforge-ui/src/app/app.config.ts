@@ -4,6 +4,7 @@ import { provideRouter, withEnabledBlockingInitialNavigation } from '@angular/ro
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAuth0 } from '@auth0/auth0-angular';
+import { environment } from '../environments/environment';
 
 
 export const appConfig: ApplicationConfig = {
@@ -12,8 +13,8 @@ export const appConfig: ApplicationConfig = {
 
     provideHttpClient(),
     provideAuth0({
-      domain: process.env['domain'] || '', // Use environment variable
-      clientId: process.env['clientId'] || '', // Use environment variable
+      domain: environment.auth0Domain,
+      clientId: environment.auth0ClientId,
       authorizationParams: {
         redirect_uri: window.location.origin,
       },

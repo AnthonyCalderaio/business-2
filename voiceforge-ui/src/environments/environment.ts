@@ -1,5 +1,6 @@
 export const environment = {
     production: false,
     backendUrl: 'http://localhost:3000', // Backend URL for local development
+    auth0Domain: process.env['domain'] || '',
+    auth0ClientId: process.env['clientId'] || '', 
   };
-  
