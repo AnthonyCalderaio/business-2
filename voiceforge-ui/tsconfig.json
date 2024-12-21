@@ -2,7 +2,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "types": ["node"],
+    "types": ["process"],
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
