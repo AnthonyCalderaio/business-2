@@ -1,0 +1,4 @@
+/node_modules/*
+node_modules
+voiceforge-backend/.env
+ImportantDocs.rtf
