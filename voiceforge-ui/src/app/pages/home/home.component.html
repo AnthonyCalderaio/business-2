@@ -20,11 +20,11 @@
         </div>
       </div>
     </div>
-    
+
     <div class="clips-list">
-      <h3>Clips for Selected Voice</h3>
+      <h3>Clips for Selected Voice: {{selectedVoice?.name}}</h3>
       <ul *ngIf="selectedVoice">
-        <li *ngFor="let clip of clipsList">
+        <li *ngFor="let clip of paginatedClips">
           <!-- Display Clip Title and Audio -->
           <div class="clip-item">
             <div class="clip-info">

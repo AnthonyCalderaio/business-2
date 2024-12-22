@@ -28,6 +28,15 @@ export class VoiceService {
     return this.http.get<any>(`${this.apiUrl}/clips`, { params });
   }
 
+
+  deleteClip(projectUUID: string, clipUUID: string ): Observable<any> {
+    let payload = { projectUUID: projectUUID, clipUUID: clipUUID };
+    return this.http.delete<any>(`${this.apiUrl}/deleteClip`, {
+      body: payload,
+      observe: 'body', // Optional: Explicitly specify the type of response observation
+    });
+  }
+
   // Method to create a voices from the backend
   createVoice(voiceData: any): Observable<any> {
     return of(CreateVoiceResponse)//this.http.post<any>(`${this.apiUrl}/create-voice`, voiceData);

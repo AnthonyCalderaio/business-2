@@ -108,6 +108,33 @@ app.get('/clips', async (req, res) => {
   }
 });
 
+// Delete Clip Endpoint
+app.delete('/deleteClip', async (req, res) => {
+  const { projectUUID, clipUUID } = req.body;
+
+  if (!projectUUID || !clipUUID) {
+    return res.status(400).json({ error: 'projectUUID and clipUUID are required.' });
+  }
+
+  try {
+    console.log('trying!')
+    const response = await axios.delete(`https://app.resemble.ai/api/v2/projects/${projectUUID}/clips/${clipUUID}`, {
+      headers: {
+        Authorization: `Bearer ${API_KEY}`,
+      },
+    });
+    return res.status(200).json({ success: true, message: 'Clip deleted successfully.' });
+  } catch (error) {
+    console.log('trying! error')
+    console.error('Error deleting clip:', error.response?.data || error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.response?.data || 'An error occurred while deleting the clip.',
+    });
+  }
+});
+
+
 // Get projects from Resemble API
 app.get('/projects', async (req, res) => {
   try {

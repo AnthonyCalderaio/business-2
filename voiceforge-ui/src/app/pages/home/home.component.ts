@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   };
   currentPage: number = 1;   // Current page of clips
   clipsPerPage: number = 5; 
+  paginatedClips: Clip[] = [];
 
   // Local data - Audio recording data
   isRecording = false;
@@ -120,7 +121,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Fetch the list of voices from the backend
   fetchVoices(): Observable<any> {
     return this.voiceService.getVoices();
-
   }
 
   fetchProjects(): Observable<any> {
@@ -130,19 +130,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   fetchClips(project_uuid: string): Observable<any> {
     return this.voiceService.getClips(project_uuid);
   }
-  // TODO: Implement
-  deleteClip(clip: String){ }
 
-  // Update clipsList based on the current page
+  // Update paginated clips without modifying clipsList
   updateClipsList(): void {
     const startIndex = (this.currentPage - 1) * this.clipsPerPage;
     const endIndex = startIndex + this.clipsPerPage;
-    this.clipsList = this.clipsList.slice(startIndex, endIndex);
+    this.paginatedClips = this.clipsList.slice(startIndex, endIndex);
+    console.log('Paginated clips:', this.paginatedClips);
   }
 
   // Go to the next page of clips
   nextPage(): void {
-    if (this.currentPage * this.clipsPerPage < this.clipsList.length) {
+    if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.updateClipsList();
     }
@@ -267,6 +266,21 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       error: (err: Error) => console.error('Error previewing voice:', err),
     });
+  }
+
+
+ deleteClip(clipUUID: string){
+    try {
+      this.voiceService.deleteClip(this.projectUUID, clipUUID)
+      .subscribe(res => {
+        console.log('deleted clip'+clipUUID+' and got:',res)
+        this.clipsList = this.clipsList.filter((clip) => clip.uuid !== clipUUID);
+      })
+     
+    } catch (error) {
+      console.error('Failed to delete clip:', error);
+      alert('An error occurred while deleting the clip.');
+    }
   }
 
   // Method to play the audio from the URL
