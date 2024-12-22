@@ -51,5 +51,9 @@ export class VoiceService {
     return this.http.get<any>(`${this.apiUrl}/projects`);
   }
 
+  createProject(projectName: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/create`, { projectName });
+  }
+
   // generateAudio(){}
 }

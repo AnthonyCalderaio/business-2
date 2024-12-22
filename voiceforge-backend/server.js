@@ -54,6 +54,34 @@ app.get('/voices', async (req, res) => {
   }
 });
 
+// POST /api/projects
+app.post('/create', async (req, res) => {
+  const { projectName, description = '', isCollaborative = false, isArchived = false } = req.body;
+
+  try {
+    const response = await axios.post(
+      'https://app.resemble.ai/api/v2/projects',
+      {
+        name: projectName,
+        description, // Optional: Add a meaningful description
+        is_collaborative: isCollaborative,
+        is_archived: isArchived,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${API_KEY}`, // Securely manage API keys
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error('Error creating project:', error.message);
+    res.status(500).json({ error: 'Failed to create project.' });
+  }
+});
+
 // Endpoint to generate a voice preview from Resemble API
 app.post('/preview', async (req, res) => {
   const { projectId, voiceId, text, pitch, speed, emotion } = req.body;

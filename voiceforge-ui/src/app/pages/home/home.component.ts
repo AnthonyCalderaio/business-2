@@ -7,10 +7,11 @@ import { Observable, of, switchMap } from 'rxjs';
 import { Project } from '../../interfaces/projects-response.interface'
 import { PreviewResponse } from '../../interfaces/preview-response.interface';
 import { CreateVoiceResponse } from '../../interfaces/create-voice-response.interface';
-import { AuthService } from '@auth0/auth0-angular';
+import { AuthService, User } from '@auth0/auth0-angular';
 import { Token } from '@angular/compiler';
 import { Voice } from '../../interfaces/voice.interface';
 import { Clip } from '../../interfaces/clip.interface';
+import { UserProfile } from '../../interfaces/user-profile.interface';
 
 @Component({
   selector: 'app-home',
@@ -37,7 +38,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     dataset_url: '',
   };
   currentPage: number = 1;   // Current page of clips
-  clipsPerPage: number = 5; 
+  clipsPerPage: number = 5;
   paginatedClips: Clip[] = [];
 
   // Local data - Audio recording data
@@ -54,7 +55,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   previewData: any | PreviewResponse = {};
   clipsList: Clip[] = []
 
-  userProfile: any;
+  userProfile: UserProfile | undefined;
   accessToken: Token | undefined;
 
   get totalPages(): number {
@@ -67,7 +68,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     // Fetch user profile and access token after login
     this.auth.user$
       .pipe(
-        switchMap((user: any) => {
+        switchMap((user: UserProfile | any) => {
           // Store the user profile
           this.userProfile = user;
           console.log('User Profile:', user);
@@ -85,14 +86,25 @@ export class HomeComponent implements OnInit, OnDestroy {
         }),
         switchMap((projects: any) => {
           // Find the specific project you need
-          projects?.items.find((project: any) => {
-            if (project.name === 'VoiceForge') {
+          let projectFound = projects?.items.find((project: any) => {
+            if (project.name === this.userProfile?.sub) {
               this.projectUUID = project.uuid;
+              return project;
             }
-          });
-
-          // Fetch the voices for the selected project
-          return this.fetchClips(this.projectUUID);
+          })
+          if (projectFound) {
+            // Fetch the voices for the selected project
+            return this.fetchClips(this.projectUUID);
+          } else {
+            // If the project does not exist, create a new one and then fetch clips
+            return this.createProject(this.userProfile?.sub)
+              .pipe(
+                switchMap((newProject: any) => {
+                  this.projectUUID = newProject.uuid; // Store the new project's UUID
+                  return this.fetchClips(this.projectUUID); // Fetch clips for the newly created project
+                })
+              );
+          }
         }),
         switchMap((clips: Clip[]) => {
           this.clipsList = clips;
@@ -129,6 +141,20 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   fetchClips(project_uuid: string): Observable<any> {
     return this.voiceService.getClips(project_uuid);
+  }
+
+  createProject(sub: string | any): Observable<any> {
+    return this.voiceService.createProject(sub)
+    // .subscribe({
+    //   next: (response) => {
+    //     console.log('Project created successfully:', response);
+    //     alert(`Project "${uniqueProjectName}" created successfully.`);
+    //   },
+    //   error: (err) => {
+    //     console.error('Error creating project:', err);
+    //     alert('Failed to create project.');
+    //   },
+    // });
   }
 
   // Update paginated clips without modifying clipsList
@@ -269,14 +295,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
 
- deleteClip(clipUUID: string){
+  deleteClip(clipUUID: string) {
     try {
       this.voiceService.deleteClip(this.projectUUID, clipUUID)
-      .subscribe(res => {
-        console.log('deleted clip'+clipUUID+' and got:',res)
-        this.clipsList = this.clipsList.filter((clip) => clip.uuid !== clipUUID);
-      })
-     
+        .subscribe(res => {
+          console.log('deleted clip' + clipUUID + ' and got:', res)
+          this.clipsList = this.clipsList.filter((clip) => clip.uuid !== clipUUID);
+        })
+
     } catch (error) {
       console.error('Failed to delete clip:', error);
       alert('An error occurred while deleting the clip.');
